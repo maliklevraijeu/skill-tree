@@ -55,20 +55,20 @@ Un exemple complet, généré depuis un corpus de skills publics connus, est dan
 En plugin Claude Code :
 
 ```
-/plugin marketplace add maliklaab22-cmd/skill-tree
+/plugin marketplace add maliklevraijeu/skill-tree
 /plugin install skill-tree@skill-tree
 ```
 
 Avec le CLI skills :
 
 ```bash
-npx skills add maliklaab22-cmd/skill-tree
+npx skills add maliklevraijeu/skill-tree
 ```
 
 À la main :
 
 ```bash
-git clone https://github.com/maliklaab22-cmd/skill-tree
+git clone https://github.com/maliklevraijeu/skill-tree
 cp -r skill-tree/skills/skill-tree ~/.claude/skills/
 ```
 
