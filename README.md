@@ -59,20 +59,20 @@ A full generated example, from a corpus of well-known public skills, is in
 As a Claude Code plugin:
 
 ```
-/plugin marketplace add OWNER/skill-tree
+/plugin marketplace add maliklaab22-cmd/skill-tree
 /plugin install skill-tree@skill-tree
 ```
 
 With the skills CLI:
 
 ```bash
-npx skills add OWNER/skill-tree
+npx skills add maliklaab22-cmd/skill-tree
 ```
 
 By hand:
 
 ```bash
-git clone https://github.com/OWNER/skill-tree
+git clone https://github.com/maliklaab22-cmd/skill-tree
 cp -r skill-tree/skills/skill-tree ~/.claude/skills/
 ```
 
