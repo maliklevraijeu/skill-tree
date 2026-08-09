@@ -65,11 +65,9 @@ def parse_scalar(value):
     return unquote(value)
 
 
-def unquote(value):
-    value = value.strip()
-    if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
-        value = value[1:-1]
-    return value
+# The frontmatter reader already knows how to strip a quoted scalar, and having
+# two copies of that rule is how they drift apart.
+unquote = scan_skills.clean_scalar
 
 
 def parse_simple_yaml(text):
@@ -234,7 +232,6 @@ def classify(skills, clusters, min_score=MIN_SCORE, overrides=None):
             role = role_of(skill, c, overrides)
             entry = dict(skill)
             entry["score"] = s
-            entry["primary"] = (c["id"] == keep[0][1]["id"])
             if role == "overlay":
                 buckets[c["id"]]["overlays"].append(entry)
             elif role == "upstream":

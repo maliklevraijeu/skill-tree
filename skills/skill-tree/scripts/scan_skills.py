@@ -148,9 +148,10 @@ def scan(project_dir=None, extra=None, isolated=False):
                 "path": path.replace("\\", "/"),
                 "source": source,
             }
-            # Same skill vendored twice (marketplace + cache) is common; keep the
-            # first path but remember the strongest source, and let personal or
-            # project installs overwrite a plugin copy the way Claude Code does.
+            # The same skill vendored twice (marketplace + cache) is common.
+            # A personal or project install shadows a plugin copy, the way
+            # Claude Code resolves it, so that entry replaces the plugin one.
+            # Otherwise the first sighting wins and later copies are dropped.
             if name in seen:
                 prev = seen[name]
                 if source in ("personal", "project", "extra") and prev["source"] == "plugin":

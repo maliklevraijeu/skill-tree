@@ -1,0 +1,62 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    # The skill runs wherever the agent runs, so it is tested on both the
+    # oldest Python still worth supporting and the newest, on Linux and Windows.
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.8", "3.11", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run the test suite
+        run: python -m unittest discover -s tests -v
+
+      - name: Build a tree from the example corpus
+        run: python skills/skill-tree/scripts/build_tree.py --path examples/sample-skills --only-path --print
+
+  no-dependencies:
+    # The promise in the README is that this runs with nothing installed.
+    # A stray import would break that quietly, so it is checked here.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Confirm the scripts import nothing third-party
+        run: |
+          python - <<'EOF'
+          import ast, pathlib, sys
+          allowed = set(sys.stdlib_module_names) | {"scan_skills", "build_tree", "hook_reminder", "yaml"}
+          bad = []
+          for path in pathlib.Path("skills").rglob("*.py"):
+              tree = ast.parse(path.read_text(encoding="utf-8"))
+              for node in ast.walk(tree):
+                  if isinstance(node, ast.Import):
+                      names = [a.name.split(".")[0] for a in node.names]
+                  elif isinstance(node, ast.ImportFrom) and node.level == 0:
+                      names = [(node.module or "").split(".")[0]]
+                  else:
+                      continue
+                  bad += [(str(path), n) for n in names if n and n not in allowed]
+          if bad:
+              print("Third-party imports found:", bad)
+              raise SystemExit(1)
+          print("No third-party imports.")
+          EOF

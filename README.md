@@ -2,6 +2,8 @@
 
 A router over the skills you already have.
 
+[![tests](https://github.com/maliklevraijeu/skill-tree/actions/workflows/tests.yml/badge.svg)](https://github.com/maliklevraijeu/skill-tree/actions/workflows/tests.yml)
+
 [Version française](README.fr.md)
 
 Count what is installed on your machine:
@@ -108,6 +110,12 @@ It appends a single `UserPromptSubmit` entry to `~/.claude/settings.json`,
 backs the file up first, and leaves every other hook alone. On each message it
 prints the tree, around 1 to 3 KB depending on how many skills you have.
 
+It also notices when the tree has gone out of date. Installing or removing a
+skill changes the mtime of your skills folder, and when that is newer than
+ROUTING.md the hook appends a line telling the agent to rebuild before trusting
+a branch. A stale tree is worse than no tree, since it routes confidently to
+skills that are gone.
+
 Skip it if you would rather invoke `/skill-tree` on purpose. Everything else
 works the same.
 
@@ -138,6 +146,20 @@ details, including how to replace the taxonomy entirely. The shipped clusters
 describe a generalist who writes, builds, designs and markets. If your work
 looks nothing like that, rewriting that one file is the highest-leverage thing
 you can do here.
+
+## Development
+
+The test suite runs on the standard library, same as the skill:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+53 tests cover the frontmatter reader, the config parser (including agreement
+with PyYAML), the scorer, the classifier, the renderer, and both CLIs end to
+end, including that the installer adds and removes only its own hook. CI runs
+them on Linux and Windows against Python 3.8, 3.11 and 3.13, and fails the
+build if a third-party import ever sneaks in.
 
 ## What it does not do
 

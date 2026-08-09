@@ -48,6 +48,33 @@ def extract_tree(text):
     return text[start + len(TREE_BEGIN):end].strip()
 
 
+def is_stale(routing, roots=None):
+    """True when a skills directory changed after the tree was built.
+
+    A directory's mtime moves when an entry is added or removed, so installing
+    or deleting a skill makes the tree stale without anything having to watch
+    for it. Comparing three stat calls costs nothing, which matters: this runs
+    on every single prompt. A tree that silently goes out of date is worse than
+    no tree, because it routes confidently to skills that are gone.
+    """
+    if roots is None:
+        home = os.path.expanduser("~")
+        roots = [os.path.join(home, ".claude", "skills"),
+                 os.path.join(home, ".claude", "plugins", "marketplaces"),
+                 os.path.join(os.getcwd(), ".claude", "skills")]
+    try:
+        built = os.path.getmtime(routing)
+    except OSError:
+        return False
+    for root in roots:
+        try:
+            if os.path.getmtime(root) > built:
+                return True
+        except OSError:
+            continue
+    return False
+
+
 def main():
     path = routing_path()
     try:
@@ -63,6 +90,11 @@ def main():
         tree = tree[:MAX_CHARS].rsplit("\n", 1)[0] + "\n... (truncated, read the file)"
 
     context = PREAMBLE % path + "\n\n" + tree
+    if is_stale(path):
+        context += ("\n\nThis tree is older than the skills folder, so a skill was installed or "
+                    "removed since it was built. Rebuild it before relying on a branch: "
+                    "python \"%s\"" % os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                                   "build_tree.py"))
     sys.stdout.write(json.dumps({
         "hookSpecificOutput": {
             "hookEventName": "UserPromptSubmit",

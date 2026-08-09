@@ -2,6 +2,8 @@
 
 Un routeur au-dessus des skills que tu as déjà.
 
+[![tests](https://github.com/maliklevraijeu/skill-tree/actions/workflows/tests.yml/badge.svg)](https://github.com/maliklevraijeu/skill-tree/actions/workflows/tests.yml)
+
 Compte ce qui est installé sur ta machine :
 
 ```bash
@@ -104,6 +106,12 @@ Il ajoute une seule entrée `UserPromptSubmit` dans `~/.claude/settings.json`,
 sauvegarde le fichier avant, et ne touche à aucun autre hook. À chaque message
 il imprime l'arbre, entre 1 et 3 Ko selon le nombre de skills.
 
+Il détecte aussi quand l'arbre est périmé. Installer ou retirer un skill change
+la date du dossier de skills, et quand elle est plus récente que ROUTING.md, le
+hook ajoute une ligne qui dit à l'agent de reconstruire avant de se fier à une
+branche. Un arbre périmé est pire que pas d'arbre, il route avec assurance vers
+des skills qui n'existent plus.
+
 Tu peux t'en passer et invoquer `/skill-tree` quand tu veux. Le reste
 fonctionne pareil.
 
@@ -134,6 +142,20 @@ Voir [customizing.md](skills/skill-tree/references/customizing.md), y compris
 pour remplacer entièrement la taxonomie. Les clusters livrés décrivent un
 généraliste qui écrit, code, design et fait du marketing. Si ton travail ne
 ressemble pas à ça, réécrire ce seul fichier est ce qui te rapportera le plus.
+
+## Développement
+
+La suite de tests tourne sur la bibliothèque standard, comme le skill :
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+53 tests couvrent le lecteur de frontmatter, le parser de config (y compris sa
+parité avec PyYAML), le scoring, la classification, le rendu, et les deux CLI
+de bout en bout, dont le fait que l'installeur ajoute et retire uniquement son
+propre hook. La CI les lance sur Linux et Windows avec Python 3.8, 3.11 et
+3.13, et casse le build si une dépendance externe se glisse dans le code.
 
 ## Ce que ça ne fait pas
 
