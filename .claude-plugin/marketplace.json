@@ -1,0 +1,20 @@
+{
+  "name": "skill-tree",
+  "owner": {
+    "name": "Malik"
+  },
+  "description": "A router over the skills you already have.",
+  "plugins": [
+    {
+      "name": "skill-tree",
+      "source": "./",
+      "description": "Routes each request to the whole group of skills that fits it, built from the skills actually installed on the machine.",
+      "category": "productivity",
+      "keywords": [
+        "skills",
+        "routing",
+        "hooks"
+      ]
+    }
+  ]
+}

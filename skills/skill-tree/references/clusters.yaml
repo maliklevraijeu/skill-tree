@@ -1,0 +1,177 @@
+# The taxonomy the router classifies your skills against.
+#
+# Edit this file. It ships with a generic starting point, and it gets better the
+# moment you bend it to the work you actually do. Add a cluster, add keywords,
+# delete what does not apply to you, then re-run build_tree.py.
+#
+# Each cluster:
+#   id        short key, used in the generated tree
+#   label     human name of the cluster
+#   branch    the line that appears in the decision tree
+#   strong    keywords that are near-proof a skill belongs here (weight 6/3)
+#   match     supporting keywords (weight 3/1)
+#   upstream  keywords marking a skill you run BEFORE producing (decide, scope)
+#   overlay   keywords marking a skill that rides along with every output
+#   note      one line of guidance printed under the cluster
+#
+# Keywords are matched as plain substrings, lowercase, against the skill name
+# (heavier) and its description (lighter). "seo" matches "seo-audit".
+#
+# The file format is a small YAML subset: a top-level key, a list of items, and
+# scalar or inline-list values. Keep to that shape and it parses without PyYAML.
+
+clusters:
+  - id: writing
+    label: Writing something publishable
+    branch: WRITE (post, article, script, email, page copy, doc)
+    strong: [copywriting, copy-editing, humanizer, ai-slop, writing, essay, blog, newsletter, editing]
+    match: [write, copy, prose, draft, wording, tone of voice, headline, storytelling, narrative, edit, proofread, plain language, ghostwrit]
+    upstream: [audience, positioning, message, angle, brief, outline, what to say, research]
+    overlay: [humaniz, ai-slop, proofread, plain-writing, copy-editing, grammar, style guide, brand voice]
+    note: Nothing publishable ships without the overlay skills. They are the last pass, not an option.
+
+  - id: code
+    label: Building or fixing software
+    branch: CODE (build, debug, refactor, review, ship)
+    strong: [code review, refactor, debug, tdd, test-driven, codebase, merge conflict, pull request, typescript, migration, implement]
+    match: [code, implement, function, repo, commit, git, bug, architecture, module, library, framework, deploy, lint, spec, ticket]
+    upstream: [spec, plan, domain model, architecture, requirement, scope, design doc]
+    overlay: [code review, lint, test, guardrail, pre-commit]
+    note: Decide before coding. The upstream skills are cheap, a wrong build is not.
+
+  - id: design
+    label: Interface and visual design
+    branch: DESIGN (UI, landing page, component, visual system)
+    strong: [frontend, ui, ux, interface, design system, landing page, animation, motion, css, component, figma, typography]
+    match: [design, visual, layout, spacing, color, theme, polish, aesthetic, dashboard, responsive, prototype, slides, canvas]
+    upstream: [audit, reference, direction, wireframe, information architecture]
+    overlay: [accessibility, review, polish, design review]
+    note: Pick one base skill per job (new build, audit, or visual direction), then stack the modules.
+
+  - id: conversion
+    label: Making a page or funnel convert
+    branch: CONVERT (pricing, signup, checkout, onboarding, offer)
+    strong: [conversion, cro, a/b test, landing page, pricing, paywall, funnel, popup, signup, onboarding, churn, lead magnet, offer]
+    match: [convert, optimi, revenue, upsell, retention, activation, trial, checkout, cart, form, quiz, testimonial, objection]
+    upstream: [research, customer, audience, jobs to be done, survey]
+    overlay: [copywriting, analytics, test]
+    note: Conversion work without a measurement plan is decoration. Bring the analytics skill along.
+
+  - id: ads
+    label: Paid advertising and creative
+    branch: ADS (campaign, ad creative, media buying)
+    strong: [ad creative, paid social, google ads, meta ads, facebook ads, ppc, media buying, roas, campaign, ad copy]
+    match: [ads, advertis, creative, targeting, audience, budget, bidding, retargeting, cpa, ctr, hook, angle, statics, ugc]
+    upstream: [market, awareness, sophistication, competitor, angle]
+    overlay: [copywriting, brand, compliance]
+    note: The angle comes before the asset. Never open the creative skill first.
+
+  - id: seo
+    label: Organic search
+    branch: SEO (rankings, technical audit, content clusters)
+    strong: [seo, serp, backlink, keyword, schema markup, sitemap, hreflang, search console, indexing, structured data]
+    match: [search, rank, organic, crawl, meta description, canonical, internal link, programmatic pages, local search, geo]
+    upstream: [audit, keyword research, competitor, plan]
+    overlay: [schema markup, structured data]
+    note: Audit first, then swap in the one module that matches the hole you found.
+
+  - id: research
+    label: Market, customer and competitor research
+    branch: RESEARCH (market, customer, competitor, trend)
+    strong: [research, competitor, competitive analysis, persona, icp, voice of customer, trend, interview]
+    match: [research, survey, insight, segment, positioning, category, benchmark, discovery, analysis, intelligence]
+    upstream: [question, hypothesis, scope]
+    overlay: [source check, citation]
+    note: Name the decision the research has to unblock, or it turns into reading.
+
+  - id: data
+    label: Data, analytics and reporting
+    branch: DATA (metrics, dashboards, spreadsheets, charts)
+    strong: [analytics, dataviz, chart, dashboard, spreadsheet, xlsx, sql, metric, kpi, report, visualization]
+    match: [data, measure, tracking, attribution, cohort, statistics, forecast, csv, query]
+    upstream: [question, definition, instrumentation]
+    overlay: [chart design, sanity check]
+    note: Define the metric before pulling the number. Most reporting arguments are definition arguments.
+
+  - id: media
+    label: Video, image and audio production
+    branch: MEDIA (video, image, audio, edit, render)
+    strong: [video, montage, image generation, render, remotion, capcut, thumbnail, audio, voice, podcast]
+    match: [clip, footage, shot, scene, subtitle, caption, frame, photo, illustration, sound, music, tts]
+    upstream: [script, shotlist, storyboard, concept]
+    overlay: [quality check, format check, export]
+    note: Script and shotlist before the timeline. Fixing structure in the edit costs ten times more.
+
+  - id: docs
+    label: Documents and file formats
+    branch: DOCS (pdf, word, slides, spreadsheets, exports)
+    strong: [pdf, docx, word document, pptx, powerpoint, slide deck, excel, document generation]
+    match: [document, file format, template, export, letterhead, table of contents, form fill, extract text]
+    upstream: [structure, outline]
+    overlay: [format check, branding]
+    note: Format skills are mechanical. The content still comes from the writing cluster.
+
+  - id: decision
+    label: Deciding and de-risking
+    branch: DECIDE (stress-test a plan, choose between options, scope a build)
+    strong: [decision, stress-test, grill, tradeoff, blind spot, pre-mortem, devil advocate, risk assessment]
+    match: [decide, choose, option, assumption, unknown, scope, evaluate, critique, spec, prioriti]
+    upstream: []
+    overlay: [devil advocate, verify]
+    note: Run this before the work, not after. One question at a time beats a list of options.
+
+  - id: automation
+    label: Automation and agent plumbing
+    branch: AUTOMATE (recurring task, hook, script, scheduled job)
+    strong: [automation, workflow, cron, scheduled, hook, loop, pipeline, integration, webhook, bot]
+    match: [automate, recurring, trigger, batch, orchestrat, background, notify, sync, script]
+    upstream: [manual run, checklist]
+    overlay: [failure handling, logging]
+    note: Do it by hand twice before automating. The second run is where the real steps show up.
+
+  - id: outreach
+    label: Sales, outreach and closing
+    branch: OUTREACH (cold email, prospecting, sales call, follow-up)
+    strong: [cold email, outreach, prospecting, sales, closing, discovery call, pitch, negotiation, crm, lead gen]
+    match: [prospect, sequence, follow-up, objection, deal, pipeline, demo, referral, partnership, proposal]
+    upstream: [icp, list, qualification]
+    overlay: [copywriting, personalization]
+    note: The list is upstream of the message. A perfect email to the wrong person is still a miss.
+
+  - id: social
+    label: Social platforms and community
+    branch: SOCIAL (post, thread, short video, community)
+    strong: [social media, linkedin, twitter, tiktok, instagram, youtube, community, thread, reels, shorts, content calendar]
+    match: [social, post, engagement, follower, viral, platform, audience growth, schedule, repurpose, caption]
+    upstream: [angle, content strategy, positioning]
+    overlay: [humaniz, brand voice, platform format]
+    note: Same message, different platform grammar. Repurposing is a rewrite, not a copy-paste.
+
+  - id: knowledge
+    label: Memory, notes and corpora
+    branch: KNOWLEDGE (search my notes, build a corpus, map a codebase)
+    strong: [knowledge graph, memory, second brain, corpus, notes, index, semantic search, transcript, ingest]
+    match: [graph, retrieve, recall, archive, organize files, catalog, summarize sources, embedding]
+    upstream: [question]
+    overlay: [source check]
+    note: Query the map before reading the territory. It is what stops you re-reading everything.
+
+  - id: meta
+    label: Skills and agent configuration
+    branch: META (create, install or configure skills, hooks, settings)
+    strong: [skill creator, create a skill, install skill, settings.json, hook configuration, agent config, marketplace, plugin]
+    match: [skill, agent, harness, permission, keybinding, subagent, prompt engineering, eval]
+    upstream: []
+    overlay: []
+    note: Changing the harness is a decision too. Back up settings before writing to them.
+
+# Pin a skill's role when the name cannot express it. Roles: overlay, upstream,
+# member. Uncomment and edit. See references/customizing.md.
+#
+# overrides:
+#   - skill: ab-testing
+#     cluster: code
+#     role: member
+#   - skill: my-house-style
+#     cluster: writing
+#     role: overlay

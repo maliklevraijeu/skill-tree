@@ -1,0 +1,20 @@
+{
+  "name": "skill-tree",
+  "version": "0.1.0",
+  "description": "Routes each request to the whole group of skills that fits it, built from the skills actually installed on the machine.",
+  "author": {
+    "name": "Malik"
+  },
+  "repository": "https://github.com/OWNER/skill-tree",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "routing",
+    "productivity",
+    "hooks",
+    "agent-configuration"
+  ],
+  "skills": [
+    "./skills/skill-tree"
+  ]
+}
