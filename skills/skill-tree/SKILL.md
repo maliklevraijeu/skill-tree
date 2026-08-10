@@ -26,12 +26,15 @@ If that file exists, read it and route from it. It is the user's map, including
 whatever they wrote in the house rules block, and it beats anything you would
 infer on the fly.
 
-If it does not exist, build it:
+If it does not exist, build it. The scripts sit next to this file:
 
 ```bash
-cd <this skill's folder>
-python scripts/build_tree.py          # writes ~/.claude/skill-tree/ROUTING.md
+python <this skill's folder>/scripts/build_tree.py   # writes ~/.claude/skill-tree/ROUTING.md
 ```
+
+If the user asked you to install this from the repo, clone it somewhere
+temporary and run `python install.py` from the clone: that copies the skill
+into `~/.claude/skills/` and builds the tree in one go.
 
 The build takes a second or two and needs nothing installed beyond Python 3.8.
 Report what came back: how many skills were found, how many were placed, how

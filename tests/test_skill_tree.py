@@ -451,3 +451,40 @@ class EndToEndTest(TempCorpus):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+class InstallerTest(TempCorpus):
+    """The one-command installer, exercised against a scratch target."""
+
+    def run_installer(self, *args, **kw):
+        env = dict(os.environ, SKILL_TREE_TARGET=os.path.join(self.dir, "skill-tree"))
+        env.update(kw.get("env", {}))
+        return subprocess.run(
+            [sys.executable, os.path.join(ROOT, "install.py")] + list(args),
+            capture_output=True, text=True, timeout=180, env=env)
+
+    def test_a_dry_run_touches_nothing(self):
+        run = self.run_installer("--dry-run")
+        self.assertEqual(run.returncode, 0, run.stderr)
+        self.assertFalse(os.path.exists(os.path.join(self.dir, "skill-tree")))
+
+    def test_it_copies_the_skill_where_claude_looks_for_it(self):
+        run = self.run_installer()
+        self.assertEqual(run.returncode, 0, run.stderr)
+        target = os.path.join(self.dir, "skill-tree")
+        self.assertTrue(os.path.exists(os.path.join(target, "SKILL.md")))
+        self.assertTrue(os.path.exists(os.path.join(target, "scripts", "build_tree.py")))
+        self.assertTrue(os.path.exists(os.path.join(target, "references", "clusters.yaml")))
+
+    def test_reinstalling_over_an_old_copy_leaves_nothing_stale(self):
+        self.run_installer()
+        target = os.path.join(self.dir, "skill-tree")
+        stale = os.path.join(target, "scripts", "removed_in_a_later_version.py")
+        write(stale, "# left over from an older install\n")
+        self.run_installer()
+        self.assertFalse(os.path.exists(stale))
+        self.assertTrue(os.path.exists(os.path.join(target, "SKILL.md")))
+
+    def test_it_tells_you_where_your_tree_landed(self):
+        run = self.run_installer()
+        self.assertIn("ROUTING.md", run.stdout)

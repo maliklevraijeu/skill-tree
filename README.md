@@ -58,24 +58,25 @@ A full generated example, from a corpus of well-known public skills, is in
 
 ## Install
 
+Easiest: ask Claude Code to do it. Paste this into a session:
+
+> Install the skill from https://github.com/maliklevraijeu/skill-tree and build my routing tree.
+
+Or one command in a terminal:
+
+```bash
+git clone https://github.com/maliklevraijeu/skill-tree && python skill-tree/install.py
+```
+
+That copies the skill where Claude Code looks for it, builds your tree, and
+prints where it landed. Add `--hook` to also wire the always-on hook described
+below.
+
 As a Claude Code plugin:
 
 ```
 /plugin marketplace add maliklevraijeu/skill-tree
 /plugin install skill-tree@skill-tree
-```
-
-With the skills CLI:
-
-```bash
-npx skills add maliklevraijeu/skill-tree
-```
-
-By hand:
-
-```bash
-git clone https://github.com/maliklevraijeu/skill-tree
-cp -r skill-tree/skills/skill-tree ~/.claude/skills/
 ```
 
 Python 3.8 or later, and nothing else. No packages to install, no API calls, no

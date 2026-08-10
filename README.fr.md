@@ -54,24 +54,25 @@ Un exemple complet, généré depuis un corpus de skills publics connus, est dan
 
 ## Installation
 
+Le plus simple : demande-le à Claude Code. Colle ça dans une session :
+
+> Installe le skill depuis https://github.com/maliklevraijeu/skill-tree et construis mon arbre de routage.
+
+Ou une seule commande dans un terminal :
+
+```bash
+git clone https://github.com/maliklevraijeu/skill-tree && python skill-tree/install.py
+```
+
+Ça copie le skill là où Claude Code va le chercher, construit ton arbre, et
+affiche où il est. Ajoute `--hook` pour brancher aussi le hook permanent décrit
+plus bas.
+
 En plugin Claude Code :
 
 ```
 /plugin marketplace add maliklevraijeu/skill-tree
 /plugin install skill-tree@skill-tree
-```
-
-Avec le CLI skills :
-
-```bash
-npx skills add maliklevraijeu/skill-tree
-```
-
-À la main :
-
-```bash
-git clone https://github.com/maliklevraijeu/skill-tree
-cp -r skill-tree/skills/skill-tree ~/.claude/skills/
 ```
 
 Python 3.8 ou plus, rien d'autre. Aucun paquet à installer, aucun appel API,
