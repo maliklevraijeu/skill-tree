@@ -18,7 +18,11 @@ import json
 import os
 import sys
 
-DEFAULT_ROUTING = os.path.join(os.path.expanduser("~"), ".claude", "skill-tree", "ROUTING.md")
+def claude_home():
+    return os.environ.get("CLAUDE_CONFIG_DIR") or os.path.join(os.path.expanduser("~"), ".claude")
+
+
+DEFAULT_ROUTING = os.path.join(claude_home(), "skill-tree", "ROUTING.md")
 TREE_BEGIN = "<!-- TREE:BEGIN -->"
 TREE_END = "<!-- TREE:END -->"
 MAX_CHARS = 2600
@@ -58,9 +62,9 @@ def is_stale(routing, roots=None):
     no tree, because it routes confidently to skills that are gone.
     """
     if roots is None:
-        home = os.path.expanduser("~")
-        roots = [os.path.join(home, ".claude", "skills"),
-                 os.path.join(home, ".claude", "plugins", "marketplaces"),
+        base = claude_home()
+        roots = [os.path.join(base, "skills"),
+                 os.path.join(base, "plugins", "marketplaces"),
                  os.path.join(os.getcwd(), ".claude", "skills")]
     try:
         built = os.path.getmtime(routing)

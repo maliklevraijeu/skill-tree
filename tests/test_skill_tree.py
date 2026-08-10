@@ -488,3 +488,64 @@ class InstallerTest(TempCorpus):
     def test_it_tells_you_where_your_tree_landed(self):
         run = self.run_installer()
         self.assertIn("ROUTING.md", run.stdout)
+
+
+class ConfigDirTest(TempCorpus):
+    """CLAUDE_CONFIG_DIR moves the whole Claude directory. Everything follows it."""
+
+    def setUp(self):
+        super(ConfigDirTest, self).setUp()
+        self.previous = os.environ.get("CLAUDE_CONFIG_DIR")
+        self.addCleanup(self.restore)
+
+    def restore(self):
+        if self.previous is None:
+            os.environ.pop("CLAUDE_CONFIG_DIR", None)
+        else:
+            os.environ["CLAUDE_CONFIG_DIR"] = self.previous
+
+    def test_the_variable_moves_the_config_directory(self):
+        os.environ["CLAUDE_CONFIG_DIR"] = self.dir
+        self.assertEqual(scan_skills.claude_home(), self.dir)
+
+    def test_without_it_the_default_is_used(self):
+        os.environ.pop("CLAUDE_CONFIG_DIR", None)
+        self.assertTrue(scan_skills.claude_home().endswith(".claude"))
+
+    def test_skills_are_found_under_the_moved_directory(self):
+        os.environ["CLAUDE_CONFIG_DIR"] = self.dir
+        write_skill(os.path.join(self.dir, "skills"), "relocated", "Lives somewhere else.")
+        found = scan_skills.scan(None, [])
+        self.assertIn("relocated", [s["name"] for s in found])
+
+
+class VirginMachineTest(TempCorpus):
+    """The first-run path, which is the one a stranger hits and I cannot see."""
+
+    def install(self, **extra):
+        home = os.path.join(self.dir, "home")
+        os.makedirs(home, exist_ok=True)
+        env = dict(os.environ, HOME=home, USERPROFILE=home)
+        env.pop("CLAUDE_CONFIG_DIR", None)
+        env.pop("SKILL_TREE_TARGET", None)
+        env.update(extra)
+        return subprocess.run([sys.executable, os.path.join(ROOT, "install.py")],
+                              capture_output=True, text=True, timeout=180, env=env), env
+
+    def test_installing_on_a_machine_with_no_other_skills_succeeds(self):
+        run, env = self.install()
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertIn("ROUTING.md", run.stdout)
+
+    def test_a_target_outside_the_config_dir_still_builds(self):
+        target = os.path.join(self.dir, "elsewhere", "skill-tree")
+        run, env = self.install(SKILL_TREE_TARGET=target)
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertTrue(os.path.exists(os.path.join(target, "SKILL.md")))
+
+    def test_it_honours_a_relocated_config_dir(self):
+        config = os.path.join(self.dir, "custom-config")
+        run, env = self.install(CLAUDE_CONFIG_DIR=config)
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertTrue(os.path.exists(os.path.join(config, "skills", "skill-tree", "SKILL.md")))
+        self.assertTrue(os.path.exists(os.path.join(config, "skill-tree", "ROUTING.md")))

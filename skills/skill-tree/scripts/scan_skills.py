@@ -27,6 +27,16 @@ def home():
     return os.path.expanduser("~")
 
 
+def claude_home():
+    """Where Claude Code keeps its config.
+
+    Usually ~/.claude, but CLAUDE_CONFIG_DIR moves it, and people who share a
+    machine or keep dotfiles in a repo do move it. Reading the variable is the
+    difference between finding every skill and finding none at all.
+    """
+    return os.environ.get("CLAUDE_CONFIG_DIR") or os.path.join(home(), ".claude")
+
+
 def search_roots(project_dir, extra, isolated=False):
     """Where skills live, in resolution order (later wins on name conflicts).
 
@@ -37,12 +47,12 @@ def search_roots(project_dir, extra, isolated=False):
     roots = []
     if isolated:
         return [(os.path.abspath(p), "extra") for p in (extra or []) if os.path.isdir(p)]
-    plugins = os.path.join(home(), ".claude", "plugins")
+    plugins = os.path.join(claude_home(), "plugins")
     for sub in ("marketplaces", "cache", "repos"):
         p = os.path.join(plugins, sub)
         if os.path.isdir(p):
             roots.append((p, "plugin"))
-    personal = os.path.join(home(), ".claude", "skills")
+    personal = os.path.join(claude_home(), "skills")
     if os.path.isdir(personal):
         roots.append((personal, "personal"))
     if project_dir:

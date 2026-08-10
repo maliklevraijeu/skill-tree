@@ -27,10 +27,14 @@ MARKER = "hook_reminder.py"
 EVENT = "UserPromptSubmit"
 
 
+def claude_home():
+    return os.environ.get("CLAUDE_CONFIG_DIR") or os.path.join(os.path.expanduser("~"), ".claude")
+
+
 def settings_path(project):
     if project:
         return os.path.join(os.getcwd(), ".claude", "settings.json")
-    return os.path.join(os.path.expanduser("~"), ".claude", "settings.json")
+    return os.path.join(claude_home(), "settings.json")
 
 
 def load(path):

@@ -29,7 +29,7 @@ sys.path.insert(0, HERE)
 import scan_skills  # noqa: E402
 
 DEFAULT_CONFIG = os.path.join(os.path.dirname(HERE), "references", "clusters.yaml")
-DEFAULT_OUT = os.path.join(os.path.expanduser("~"), ".claude", "skill-tree", "ROUTING.md")
+DEFAULT_OUT = os.path.join(scan_skills.claude_home(), "skill-tree", "ROUTING.md")
 
 TREE_BEGIN = "<!-- TREE:BEGIN -->"
 TREE_END = "<!-- TREE:END -->"

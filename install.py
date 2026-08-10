@@ -19,10 +19,13 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SOURCE = os.path.join(HERE, "skills", "skill-tree")
+sys.path.insert(0, os.path.join(SOURCE, "scripts"))
+
+import scan_skills  # noqa: E402
 # Overridable so the tests can install into a scratch directory instead of the
 # real one. Nobody needs it in normal use.
 TARGET = os.environ.get("SKILL_TREE_TARGET") or os.path.join(
-    os.path.expanduser("~"), ".claude", "skills", "skill-tree")
+    scan_skills.claude_home(), "skills", "skill-tree")
 
 
 def copy(dry_run):
@@ -50,7 +53,7 @@ def run(script, *args):
     proc = subprocess.run(cmd, capture_output=True, text=True)
     sys.stdout.write(proc.stdout)
     sys.stdout.write(proc.stderr)
-    return proc.returncode
+    return proc.returncode, (proc.stdout + proc.stderr)
 
 
 def main():
@@ -68,12 +71,21 @@ def main():
         return
 
     print("")
-    if run("build_tree.py") != 0:
+    # Point the build at where the skill just landed. Without this, an install
+    # into a non-standard location builds a tree that cannot see itself.
+    code, output = run("build_tree.py", "--path", os.path.dirname(TARGET))
+    if code != 0:
+        if "No skills found" in output:
+            print("")
+            print("Installed, but there are no skills here to route yet.")
+            print("Install a few, then run: python \"%s\""
+                  % os.path.join(TARGET, "scripts", "build_tree.py"))
+            return
         raise SystemExit("The build failed. Open an issue with the output above.")
 
     if args.hook:
         print("")
-        if run("install_hook.py", "--yes") != 0:
+        if run("install_hook.py", "--yes")[0] != 0:
             print("The hook did not install. Everything else works, run it later with:")
             print('  python "%s" ' % os.path.join(TARGET, "scripts", "install_hook.py"))
 
