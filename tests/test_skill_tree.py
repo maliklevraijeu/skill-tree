@@ -549,3 +549,77 @@ class VirginMachineTest(TempCorpus):
         self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
         self.assertTrue(os.path.exists(os.path.join(config, "skills", "skill-tree", "SKILL.md")))
         self.assertTrue(os.path.exists(os.path.join(config, "skill-tree", "ROUTING.md")))
+
+
+class DoctorTest(TempCorpus):
+    """The self-check, which is how anyone answers "did it actually work?"."""
+
+    def setUp(self):
+        super(DoctorTest, self).setUp()
+        self.config = os.path.join(self.dir, "config")
+        os.makedirs(self.config)
+
+    def doctor(self, *args):
+        env = dict(os.environ, CLAUDE_CONFIG_DIR=self.config,
+                   HOME=self.dir, USERPROFILE=self.dir)
+        env.pop("SKILL_TREE_TARGET", None)
+        return subprocess.run(
+            [sys.executable, os.path.join(SCRIPTS, "doctor.py")] + list(args),
+            capture_output=True, text=True, timeout=120, env=env, cwd=self.dir)
+
+    def install(self):
+        env = dict(os.environ, CLAUDE_CONFIG_DIR=self.config,
+                   HOME=self.dir, USERPROFILE=self.dir)
+        env.pop("SKILL_TREE_TARGET", None)
+        return subprocess.run([sys.executable, os.path.join(ROOT, "install.py")],
+                              capture_output=True, text=True, timeout=180, env=env, cwd=self.dir)
+
+    def test_it_fails_when_nothing_is_installed(self):
+        run = self.doctor()
+        self.assertEqual(run.returncode, 1)
+        self.assertIn("Skill installed", run.stdout)
+        self.assertIn("to fix", run.stdout)
+
+    def test_a_failing_check_names_the_command_that_fixes_it(self):
+        run = self.doctor()
+        self.assertIn("fix:", run.stdout)
+
+    def test_it_passes_after_a_real_install(self):
+        self.install()
+        run = self.doctor()
+        self.assertEqual(run.returncode, 0, run.stdout)
+        self.assertIn("Everything checks out", run.stdout)
+
+    def test_quiet_mode_is_one_line(self):
+        self.install()
+        run = self.doctor("--quiet")
+        self.assertEqual(run.stdout.strip(), "OK")
+        self.assertEqual(run.returncode, 0)
+
+    def test_quiet_mode_names_the_problem_when_broken(self):
+        run = self.doctor("--quiet")
+        self.assertTrue(run.stdout.strip().startswith("BROKEN:"), run.stdout)
+        self.assertEqual(run.returncode, 1)
+
+    def test_it_catches_a_hook_pointing_at_a_deleted_file(self):
+        self.install()
+        write(os.path.join(self.config, "settings.json"), json.dumps({
+            "hooks": {"UserPromptSubmit": [{"hooks": [{
+                "type": "command",
+                "command": '"python" "%s"' % os.path.join(self.dir, "gone", "hook_reminder.py"),
+            }]}]}
+        }))
+        run = self.doctor()
+        self.assertEqual(run.returncode, 1)
+        self.assertIn("points at a file that is gone", run.stdout)
+
+    def test_it_catches_a_missing_tree(self):
+        self.install()
+        os.remove(os.path.join(self.config, "skill-tree", "ROUTING.md"))
+        run = self.doctor()
+        self.assertEqual(run.returncode, 1)
+        self.assertIn("not built yet", run.stdout)
+
+    def test_the_installer_ends_with_the_diagnosis(self):
+        run = self.install()
+        self.assertIn("skill-tree doctor", run.stdout)

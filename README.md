@@ -89,9 +89,17 @@ Ask your agent to build the tree, or run it yourself:
 ```bash
 cd ~/.claude/skills/skill-tree
 
+python scripts/doctor.py             # is it working? what is broken, and how to fix it
 python scripts/scan_skills.py        # what you have, and where it came from
 python scripts/build_tree.py         # writes ~/.claude/skill-tree/ROUTING.md
 ```
+
+The installer finishes by running `doctor.py`, so you get a verdict instead of
+a path. It checks that the skill sits where Claude Code actually reads, that
+the tree has real branches, that it is not older than your skills folder, and
+that the hook points at a file that still exists. Every problem comes with the
+command that fixes it. If something misbehaves, paste that report into an
+issue: it is the whole diagnosis.
 
 Rebuild after installing or removing skills. The build is instant and reads
 nothing but frontmatter.

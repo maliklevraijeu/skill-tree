@@ -40,13 +40,23 @@ The build takes a second or two and needs nothing installed beyond Python 3.8.
 Report what came back: how many skills were found, how many were placed, how
 many were not.
 
-## The three commands
+## The four commands
 
 ```bash
+python scripts/doctor.py                      # is any of this working?
 python scripts/scan_skills.py                 # what is installed, and where
 python scripts/build_tree.py                  # write ROUTING.md
 python scripts/install_hook.py --dry-run      # preview the always-on hook
 ```
+
+`doctor.py` is the one to reach for when the user says it is not working, and
+the one to run after any change here. It checks the config directory, that the
+skill sits where Claude Code actually reads, how many skills were found, that
+the tree exists with real branches and is not older than the skills folder, and
+that the hook points at a file that still exists. Every problem prints the
+command that fixes it, and it exits non-zero when something is broken, so it
+also works as a check in a script. Ask the user to paste its output rather than
+guessing from a description.
 
 `scan_skills.py` reads every SKILL.md it can find: personal skills in
 `~/.claude/skills`, project skills in `<project>/.claude/skills`, and plugin

@@ -85,9 +85,17 @@ Demande à ton agent de construire l'arbre, ou lance-le toi-même :
 ```bash
 cd ~/.claude/skills/skill-tree
 
+python scripts/doctor.py             # est-ce que ça marche ? ce qui cloche, et comment le réparer
 python scripts/scan_skills.py        # ce que tu as, et d'où ça vient
 python scripts/build_tree.py         # écrit ~/.claude/skill-tree/ROUTING.md
 ```
+
+L'installeur se termine par `doctor.py`, donc tu obtiens un verdict au lieu
+d'un chemin. Il vérifie que le skill est bien là où Claude Code va le lire, que
+l'arbre a de vraies branches, qu'il n'est pas plus vieux que ton dossier de
+skills, et que le hook pointe vers un fichier qui existe encore. Chaque
+problème arrive avec la commande qui le règle. Si un truc déraille, colle ce
+rapport dans une issue : c'est tout le diagnostic.
 
 Reconstruis après avoir installé ou retiré des skills. Le build est instantané
 et ne lit que le frontmatter.

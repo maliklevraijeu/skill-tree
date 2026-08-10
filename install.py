@@ -89,13 +89,14 @@ def main():
             print("The hook did not install. Everything else works, run it later with:")
             print('  python "%s" ' % os.path.join(TARGET, "scripts", "install_hook.py"))
 
-    routing = os.path.join(os.path.expanduser("~"), ".claude", "skill-tree", "ROUTING.md")
+    # Finish on a diagnosis rather than a path. "It printed something" is not
+    # the same as "it works", and the difference is what people report back.
     print("")
-    print("Done. Your tree: %s" % routing)
-    print("Open it. The branches are named after your own skills.")
+    run("doctor.py")
     if not args.hook:
         print("")
-        print("To have it in front of the agent on every message, rerun with --hook.")
+        print("To have the tree in front of the agent on every message, rerun with --hook.")
+    print("Open your tree, the branches are named after your own skills.")
 
 
 if __name__ == "__main__":
