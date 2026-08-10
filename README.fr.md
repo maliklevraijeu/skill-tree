@@ -176,6 +176,11 @@ La règle la plus forte du fichier est `always`. Les skills d'overlay, les
 relecteurs et les vérificateurs, sont ceux qu'on saute quand on va vite. Ce
 sont eux qui séparent un brouillon d'un truc livrable.
 
+## Colophon
+
+Construit avec Claude Code, qui est aussi ce qu'il route. La méthode vient
+d'abord, d'une année à voir quels skills n'étaient jamais appelés.
+
 ## Licence
 
 MIT. Voir [LICENSE](LICENSE).

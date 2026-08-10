@@ -180,6 +180,11 @@ The strongest rule in the file is `always`. Overlay skills, the editors and
 reviewers and checkers, are the ones people skip when they are moving fast, and
 they are what separates a draft from something publishable.
 
+## Colophon
+
+Built with Claude Code, which is also what it routes. The method came first,
+from a year of noticing which skills never got called.
+
 ## License
 
 MIT. See [LICENSE](LICENSE).
