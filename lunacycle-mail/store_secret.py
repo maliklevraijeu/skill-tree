@@ -17,6 +17,17 @@ import sys
 import config
 
 
+def prompt(label):
+    """Saisie masquee, en exigeant un vrai terminal.
+
+    Sans tty, getpass bascule tout seul sur une saisie en clair. On refuse :
+    un mot de passe echo a l'ecran finit dans un log ou une capture.
+    """
+    if not sys.stdin.isatty():
+        raise EOFError
+    return getpass.getpass(label)
+
+
 def read_existing():
     values = config.load_env_file()
     return values
@@ -38,10 +49,18 @@ def main():
     print("Mot de passe d'application Infomaniak pour %s"
           % config.get("LUNACYCLE_SMTP_USER"))
     print("(la saisie reste invisible, c'est normal)")
-    first = getpass.getpass("Mot de passe : ")
-    if not first.strip():
-        raise SystemExit("Rien saisi, abandon.")
-    second = getpass.getpass("Confirme     : ")
+    try:
+        first = prompt("Mot de passe : ")
+        if not first.strip():
+            raise SystemExit("Rien saisi, abandon.")
+        second = prompt("Confirme     : ")
+    except EOFError:
+        # Pas de terminal : script lance par un agent, un cron, un pipe. Mieux
+        # vaut le dire que de laisser tomber une traceback sur l'utilisateur.
+        raise SystemExit(
+            "\nAucun terminal interactif : impossible de saisir le mot de passe ici.\n"
+            "Lance cette commande depuis un vrai terminal, ou passe par\n"
+            "l'environnement :  export LUNACYCLE_SMTP_PASSWORD='…'")
     if first != second:
         raise SystemExit("Les deux saisies different, abandon. Rien n'a ete ecrit.")
 
