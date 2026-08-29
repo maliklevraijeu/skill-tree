@@ -4,3 +4,7 @@ __pycache__/
 classification.json
 inventory.json
 *.skill-tree-backup
+
+# Secrets locaux — ne jamais versionner
+.env
+lunacycle-mail/.env
